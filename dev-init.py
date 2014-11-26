@@ -53,7 +53,7 @@ def init_parser():
     # Default init group
     group_init = parser.add_argument_group()
     group_init.add_argument("init_env", metavar="environment", nargs="?",
-        help="initialize a the specified environment in current directory")
+        help="initialize the specified environment in current directory")
 
     return parser
 
