@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# dev-init
+# dev-init - automated development environment initialization
 # https://github.com/rmed/dev-init
 #
 # Copyright (C) 2014  Rafael Medina García <rafamedgar@gmail.com>
@@ -31,7 +31,7 @@ CONFIG = os.path.join(os.path.expanduser("~"), ".dev-init")
 def init_parser():
     """ Initialize the arguments parser. """
     parser = argparse.ArgumentParser(
-        description="Automatic initialization of development environment")
+        description="Automated development environment initialization")
 
     # List group
     group_list = parser.add_argument_group()
