@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # dev-init
@@ -19,17 +19,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
 import argparse
+import configparser
+import os
+import subprocess
 import sys
 
-try:
-    from configparser import ConfigParser
-except ImportError:
-    import ConfigParser
+CONFIG = os.path.join(os.path.expanduser("~"), ".dev-init")
 
 
-def _init_parser():
+def init_parser():
     """ Initialize the arguments parser. """
     parser = argparse.ArgumentParser(
         description="Automatic initialization of development environment")
@@ -53,32 +52,135 @@ def _init_parser():
 
     # Default init group
     group_init = parser.add_argument_group()
-    group_init.add_argument("init_env", metavar="env_type", nargs="?",
-        help="initialize a new environment in current directory")
-
+    group_init.add_argument("init_env", metavar="environment", nargs="?",
+        help="initialize a the specified environment in current directory")
 
     return parser
+
+def init_env(environment):
+    """ Initialize a new environment in current working directory. """
+    parser = read_config()
+
+    if environment not in parser.sections():
+        print("Unknown environment type '%s'" % environment)
+        return
+
+    commands = parser[environment]["cmd"].split("\n")
+
+    for cmd in commands:
+        proc = subprocess.Popen(cmd , cwd=os.getcwd(), shell=True)
+        proc.wait()
+
+    print("Initialized '%s' environment" % environment)
+
+def list_env():
+    """ List all the available environments in the configuration. """
+    parser = read_config()
+
+    for env in parser.sections():
+        print(env)
+
+def new_env(environment):
+    """ Create a new environment in the configuration and ask the
+        user for the commands for this specific environment.
+    """
+    parser = read_config()
+
+    if environment in parser.sections():
+        print("Environment '%s' already exists" % environment)
+        return
+
+    print("Please introduce (in order) the commands for '%s'\n" % environment)
+    print("Press RETURN to end command and RETURN with empty line to finish\n")
+
+    commands = []
+    cmd = ""
+
+    while True:
+        try:
+            cmd = input("> ")
+
+            if not cmd:
+                break
+
+            commands.append(cmd)
+
+        except KeyboardInterrupt:
+            return
+
+    parser.add_section(environment)
+    parser[environment]["cmd"] = "\n".join(commands)
+
+    write_config(parser)
+
+    print("Added environment '%s'" % environment)
+
+def remove_env(environment):
+    """ Remove an environment from the configuration. """
+    parser = read_config()
+
+    if not parser.remove_section(environment):
+        print("Unknown environment type '%s'" % environment)
+        return
+
+    write_config(parser)
+
+    print("Removed environment '%s'" % environment)
+
+def show_env(environment):
+    """ Show the commands for a given environment. """
+    parser = read_config()
+
+    try:
+        commands = parser[environment]["cmd"].split("\n")
+
+    except KeyError:
+        print("Unknown environment type '%s'" % environment)
+        return
+
+    print("Environment: %s\n" % environment)
+
+    for cmd in commands:
+        print(cmd)
+
+def read_config():
+    """ Read the configuration file and parse the different environments.
+
+        Returns: ConfigParser object
+    """
+    if not os.path.isfile(CONFIG):
+        with open(CONFIG, "w"):
+            pass
+
+    parser = configparser.ConfigParser()
+    parser.read(CONFIG)
+
+    return parser
+
+def write_config(parser):
+    """ Write back new configuration to file. """
+    with open(CONFIG, "w") as config_file:
+        parser.write(config_file)
 
 def parse_action(parsed):
     """ Parse the action to execute. """
     if parsed.init_env:
-        return init_env()
+        init_env(parsed.init_env)
 
     elif parsed.list:
-        return list_env(parsed.list)
+        list_env()
 
     elif parsed.new:
-        return new_env(parsed.new)
+        new_env(parsed.new)
 
     elif parsed.remove:
-        return remove_env(parsed.remove)
+        remove_env(parsed.remove)
 
     elif parsed.show:
-        return show_env(parsed.show)
+        show_env(parsed.show)
 
-if __name__ == "__main__":
-
-    parser = _init_parser()
+def main():
+    parser = init_parser()
     args = parser.parse_args()
 
     if len(sys.argv) == 1:
@@ -86,3 +188,7 @@ if __name__ == "__main__":
         parser.print_help()
 
     parse_action(args)
+
+
+if __name__ == "__main__":
+    main()
