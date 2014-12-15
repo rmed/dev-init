@@ -6,7 +6,7 @@ Automated development environment initialization
 Requirements
 ------------
 
-- Python 3
+- Python 2 or 3 (tested in Python 2.7 and 3.4)
 
 Usage
 -----
