@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # dev-init - automated development environment initialization
@@ -20,10 +19,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
-import configparser
 import os
 import subprocess
 import sys
+# Python 2 and 3 compatibility
+try:
+    from configparser import ConfigParser
+except:
+    from ConfigParser import ConfigParser
+if sys.version[0] == "3": raw_input=input
+
 
 CONFIG = os.path.join(os.path.expanduser("~"), ".dev-init")
 
@@ -65,7 +70,7 @@ def init_env(environment):
         print("Unknown environment type '%s'" % environment)
         return
 
-    commands = parser[environment]["cmd"].split("\n")
+    commands = parser.get(environment, "cmd").split("\n")
 
     for cmd in commands:
         proc = subprocess.Popen(cmd , cwd=os.getcwd(), shell=True)
@@ -98,7 +103,7 @@ def new_env(environment):
 
     while True:
         try:
-            cmd = input("> ")
+            cmd = raw_input("> ")
 
             if not cmd:
                 break
@@ -109,7 +114,7 @@ def new_env(environment):
             return
 
     parser.add_section(environment)
-    parser[environment]["cmd"] = "\n".join(commands)
+    parser.set(environment, "cmd", "\n".join(commands))
 
     write_config(parser)
 
@@ -132,7 +137,7 @@ def show_env(environment):
     parser = read_config()
 
     try:
-        commands = parser[environment]["cmd"].split("\n")
+        commands = parser.get(environment, "cmd").split("\n")
 
     except KeyError:
         print("Unknown environment type '%s'" % environment)
@@ -152,7 +157,7 @@ def read_config():
         with open(CONFIG, "w"):
             pass
 
-    parser = configparser.ConfigParser()
+    parser = ConfigParser()
     parser.read(CONFIG)
 
     return parser
