@@ -193,7 +193,3 @@ def main():
         parser.print_help()
 
     parse_action(args)
-
-
-if __name__ == "__main__":
-    main()
