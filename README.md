@@ -1,6 +1,8 @@
 dev-init
 ========
 
+[![PyPI version](https://img.shields.io/pypi/v/dev-init.svg)](https://pypi.python.org/pypi/dev-init)
+
 Automated development environment initialization
 
 Requirements
