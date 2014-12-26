@@ -60,7 +60,7 @@ def init_parser():
 
     # Initialize environment
     parser.add_argument("env", metavar="environment", nargs="?",
-        help="initialize the specified environment in current directory")
+        help="environment name to initialize/create/remove/show")
 
     return parser
 

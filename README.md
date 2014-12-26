@@ -19,7 +19,7 @@ usage: dev_init [-h] [--version] [-l] [-n | -r | -s] [environment]
 Automated development environment initialization
 
 positional arguments:
-  environment   initialize the specified environment in current directory
+  environment   environment name to initialize/create/remove/show
 
 optional arguments:
   -h, --help    show this help message and exit
