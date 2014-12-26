@@ -22,7 +22,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='dev-init',
-    version='0.1.0',
+    version='0.2.0',
 
     description='Automated development environment initialization',
 
@@ -40,7 +40,6 @@ setup(
         'Topic :: Utilities',
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',

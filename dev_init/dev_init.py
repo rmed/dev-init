@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
+from _version import __version__
 import argparse
 import os
 import subprocess
@@ -38,26 +40,26 @@ def init_parser():
     parser = argparse.ArgumentParser(
         description="Automated development environment initialization")
 
-    # List group
-    group_list = parser.add_argument_group()
-    group_list.add_argument("-l", "--list", action="store_true",
+    parser.add_argument('--version', action='version',
+        version='%(prog)s ' + __version__)
+
+    parser.add_argument("-l", "--list", action="store_true",
         help="list all the available environment types")
 
     # Actions group
     group_actions = parser.add_mutually_exclusive_group()
 
-    group_actions.add_argument("-n", "--new", metavar="env",
+    group_actions.add_argument("-n", "--new", action="store_true",
         help="define a new environment type")
 
-    group_actions.add_argument("-r", "--remove", metavar="env",
+    group_actions.add_argument("-r", "--remove", action="store_true",
         help="remove an environment type from the configuration file")
 
-    group_actions.add_argument("-s", "--show", metavar="env",
+    group_actions.add_argument("-s", "--show", action="store_true",
         help="show the commands performed for a specific environemnt")
 
-    # Default init group
-    group_init = parser.add_argument_group()
-    group_init.add_argument("init_env", metavar="environment", nargs="?",
+    # Initialize environment
+    parser.add_argument("env", metavar="environment", nargs="?",
         help="initialize the specified environment in current directory")
 
     return parser
@@ -89,6 +91,10 @@ def new_env(environment):
     """ Create a new environment in the configuration and ask the
         user for the commands for this specific environment.
     """
+    if not environment:
+        print("You need to supply an environment name")
+        return
+
     parser = read_config()
 
     if environment in parser.sections():
@@ -122,6 +128,10 @@ def new_env(environment):
 
 def remove_env(environment):
     """ Remove an environment from the configuration. """
+    if not environment:
+        print("You need to supply an environment name")
+        return
+
     parser = read_config()
 
     if not parser.remove_section(environment):
@@ -134,6 +144,10 @@ def remove_env(environment):
 
 def show_env(environment):
     """ Show the commands for a given environment. """
+    if not environment:
+        print("You need to supply an environment name")
+        return
+
     parser = read_config()
 
     try:
@@ -169,20 +183,20 @@ def write_config(parser):
 
 def parse_action(parsed):
     """ Parse the action to execute. """
-    if parsed.init_env:
-        init_env(parsed.init_env)
-
-    elif parsed.list:
+    if parsed.list:
         list_env()
 
     elif parsed.new:
-        new_env(parsed.new)
+        new_env(parsed.env)
 
     elif parsed.remove:
-        remove_env(parsed.remove)
+        remove_env(parsed.env)
 
     elif parsed.show:
-        show_env(parsed.show)
+        show_env(parsed.env)
+
+    elif parsed.env:
+        init_env(parsed.env)
 
 def main():
     parser = init_parser()
