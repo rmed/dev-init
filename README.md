@@ -12,18 +12,18 @@ Usage
 -----
 
 ```
-usage: dev-init.py [-h] [-l] [-n env | -r env | -s env] [environment]
+usage: dev_init [-h] [--version] [-l] [-n | -r | -s] [environment]
 
 Automated development environment initialization
 
+positional arguments:
+  environment   initialize the specified environment in current directory
+
 optional arguments:
-  -h, --help            show this help message and exit
-  -n env, --new env     define a new environment type
-  -r env, --remove env  remove an environment type from the configuration file
-  -s env, --show env    show the commands performed for a specific environemnt
-
-  -l, --list            list all the available environment types
-
-  environment           initialize the specified environment in current
-                        directory
+  -h, --help    show this help message and exit
+  --version     show program's version number and exit
+  -l, --list    list all the available environment types
+  -n, --new     define a new environment type
+  -r, --remove  remove an environment type from the configuration file
+  -s, --show    show the commands performed for a specific environemnt
 ```
