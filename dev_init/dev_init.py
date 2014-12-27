@@ -19,7 +19,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import
-from _version import __version__
 import argparse
 import os
 import subprocess
@@ -31,6 +30,8 @@ except:
     from ConfigParser import ConfigParser
 if sys.version[0] == "3": raw_input=input
 
+
+__version__ = "0.2.1"
 
 CONFIG = os.path.join(os.path.expanduser("~"), ".dev-init")
 
