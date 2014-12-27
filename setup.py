@@ -19,12 +19,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from setuptools import setup, find_packages
+from os import path
+
+here = path.abspath(path.dirname(__file__))
+
+with open(path.join(here, "DESCRIPTION.rst")) as f:
+    long_description = f.read()
 
 setup(
     name='dev-init',
     version='0.2.0',
 
     description='Automated development environment initialization',
+    long_description=long_description,
 
     url='https://github.com/rmed/dev-init',
 
