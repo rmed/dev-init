@@ -58,24 +58,41 @@ def init_parser():
     group_actions.add_argument("-s", "--show", action="store_true",
         help="show the commands performed for a specific environemnt")
 
-    # Initialize environment
+    group_actions.add_argument("-p", "--path", metavar="path",
+        help="path in which to initialize the environment")
+
     parser.add_argument("env", metavar="environment", nargs="?",
         help="environment name to initialize/create/remove/show")
 
     return parser
 
-def init_env(environment):
-    """ Initialize a new environment in current working directory. """
+def init_env(environment, path):
+    """ Initialize a new environment in specified directory.
+
+        If path does not exist, will try to create the directory structure
+        recursively.
+
+        If the path is not provided, will use current working directory.
+    """
     parser = read_config()
 
     if environment not in parser.sections():
         print("Unknown environment type '%s'" % environment)
         return
 
+    if path and not os.path.isdir(path):
+        try:
+            os.makedirs(path)
+        except os.error:
+            print("Could not create directory structure")
+            return
+
+    init_path = path if path else os.getcwd()
+
     commands = parser.get(environment, "cmd").split("\n")
 
     for cmd in commands:
-        proc = subprocess.Popen(cmd , cwd=os.getcwd(), shell=True)
+        proc = subprocess.Popen(cmd , cwd=init_path, shell=True)
         proc.wait()
 
     print("Initialized '%s' environment" % environment)
@@ -196,7 +213,7 @@ def parse_action(parsed):
         show_env(parsed.env)
 
     elif parsed.env:
-        init_env(parsed.env)
+        init_env(parsed.env, parsed.path)
 
 def main():
     parser = init_parser()
