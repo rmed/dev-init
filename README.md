@@ -14,7 +14,7 @@ Usage
 -----
 
 ```
-usage: dev_init [-h] [--version] [-l] [-n | -r | -s | -p path]
+usage: dev-init [-h] [--version] [-l] [-n | -r | -s | -p path]
                    [environment]
 
 Automated development environment initialization
