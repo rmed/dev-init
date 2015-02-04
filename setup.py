@@ -28,7 +28,7 @@ with open(path.join(here, "DESCRIPTION.rst")) as f:
 
 setup(
     name='dev-init',
-    version='0.2.1',
+    version='0.2.2',
 
     description='Automated development environment initialization',
     long_description=long_description,

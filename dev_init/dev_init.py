@@ -31,7 +31,7 @@ except:
 if sys.version[0] == "3": raw_input=input
 
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 CONFIG = os.path.join(os.path.expanduser("~"), ".dev-init")
 
@@ -91,6 +91,8 @@ def init_env(environment, path):
     init_path = path if path else os.getcwd()
 
     commands = parser.get(environment, "cmd").split("\n")
+
+    print("Working in directory: " + init_path)
 
     for cmd in commands:
         proc = subprocess.Popen(cmd , cwd=init_path, shell=True)
