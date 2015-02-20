@@ -31,7 +31,7 @@ except:
 if sys.version[0] == "3": raw_input=input
 
 
-__version__ = "0.2.2"
+__version__ = "0.3.0"
 
 CONFIG = os.path.join(os.path.expanduser("~"), ".dev-init")
 
