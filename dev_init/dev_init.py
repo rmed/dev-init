@@ -44,61 +44,35 @@ def init_parser():
     parser.add_argument('--version', action='version',
         version='%(prog)s ' + __version__)
 
-    parser.add_argument("-l", "--list", action="store_true",
+    subparsers = parser.add_subparsers(title="commands")
+
+    # List command
+    parser_list = subparsers.add_parser("list",
         help="list all the available environment types")
 
-    # Actions group
-    group_actions = parser.add_mutually_exclusive_group()
-
-    group_actions.add_argument("-n", "--new", action="store_true",
+    # New command
+    parser_new = subparsers.add_parser("new",
         help="define a new environment type")
+    parser_new.add_argument("environment", help="name for the environment")
 
-    group_actions.add_argument("-r", "--remove", action="store_true",
+    # Remove command
+    parser_remove = subparsers.add_parser("remove",
         help="remove an environment type from the configuration file")
+    parser_remove.add_argument("environment", help="name of the environment")
 
-    group_actions.add_argument("-s", "--show", action="store_true",
-        help="show the commands performed for a specific environemnt")
+    # Show command
+    parser_show = subparsers.add_parser("show",
+        help="show the commands performed for a specific environment")
+    parser_show.add_argument("environment", help="name of the environment")
 
-    group_actions.add_argument("-p", "--path", metavar="path",
+    # Start command
+    parser_start = subparsers.add_parser("start",
+        help="start a new environment")
+    parser_start.add_argument("environment", help="name of the environment")
+    parser_start.add_argument("path", nargs="?",
         help="path in which to initialize the environment")
 
-    parser.add_argument("env", metavar="environment", nargs="?",
-        help="environment name to initialize/create/remove/show")
-
     return parser
-
-def init_env(environment, path):
-    """ Initialize a new environment in specified directory.
-
-        If path does not exist, will try to create the directory structure
-        recursively.
-
-        If the path is not provided, will use current working directory.
-    """
-    parser = read_config()
-
-    if environment not in parser.sections():
-        print("Unknown environment type '%s'" % environment)
-        return
-
-    if path and not os.path.isdir(path):
-        try:
-            os.makedirs(path)
-        except os.error:
-            print("Could not create directory structure")
-            return
-
-    init_path = path if path else os.getcwd()
-
-    commands = parser.get(environment, "cmd").split("\n")
-
-    print("Working in directory: " + init_path)
-
-    for cmd in commands:
-        proc = subprocess.Popen(cmd , cwd=init_path, shell=True)
-        proc.wait()
-
-    print("Initialized '%s' environment" % environment)
 
 def list_env():
     """ List all the available environments in the configuration. """
@@ -182,6 +156,39 @@ def show_env(environment):
     for cmd in commands:
         print(cmd)
 
+def start_env(environment, path):
+    """ Initialize a new environment in specified directory.
+
+        If path does not exist, will try to create the directory structure
+        recursively.
+
+        If the path is not provided, will use current working directory.
+    """
+    parser = read_config()
+
+    if environment not in parser.sections():
+        print("Unknown environment type '%s'" % environment)
+        return
+
+    if path and not os.path.isdir(path):
+        try:
+            os.makedirs(path)
+        except os.error:
+            print("Could not create directory structure")
+            return
+
+    init_path = path if path else os.getcwd()
+
+    commands = parser.get(environment, "cmd").split("\n")
+
+    print("Working in directory: " + init_path)
+
+    for cmd in commands:
+        proc = subprocess.Popen(cmd , cwd=init_path, shell=True)
+        proc.wait()
+
+    print("Initialized '%s' environment" % environment)
+
 def read_config():
     """ Read the configuration file and parse the different environments.
 
@@ -201,22 +208,22 @@ def write_config(parser):
     with open(CONFIG, "w") as config_file:
         parser.write(config_file)
 
-def parse_action(parsed):
+def parse_action(action, parsed):
     """ Parse the action to execute. """
-    if parsed.list:
+    if action == "list":
         list_env()
 
-    elif parsed.new:
-        new_env(parsed.env)
+    elif action == "new":
+        new_env(parsed.environment)
 
-    elif parsed.remove:
-        remove_env(parsed.env)
+    elif action == "remove":
+        remove_env(parsed.environment)
 
-    elif parsed.show:
-        show_env(parsed.env)
+    elif action == "show":
+        show_env(parsed.environment)
 
-    elif parsed.env:
-        init_env(parsed.env, parsed.path)
+    elif action == "start":
+        start_env(parsed.environment, parsed.path)
 
 def main():
     parser = init_parser()
@@ -225,5 +232,6 @@ def main():
     if len(sys.argv) == 1:
         # No argument provided
         parser.print_help()
+        return
 
-    parse_action(args)
+    parse_action(sys.argv[1], args)
